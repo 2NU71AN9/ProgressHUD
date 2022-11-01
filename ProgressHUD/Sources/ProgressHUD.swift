@@ -336,7 +336,7 @@ public class ProgressHUD: UIView {
 	private func setupBackground(_ interaction: Bool) {
 
 		if (viewBackground == nil) {
-			let mainWindow = UIApplication.shared.windows.first ?? UIWindow()
+			let mainWindow = getWindow
 			viewBackground = UIView(frame: self.bounds)
 			mainWindow.addSubview(viewBackground!)
 		}
@@ -532,7 +532,7 @@ public class ProgressHUD: UIView {
 			heightKeyboard = keyboardHeight()
 		}
 
-		let mainWindow = UIApplication.shared.windows.first ?? UIWindow()
+		let mainWindow = getWindow
 		let screen = mainWindow.bounds
 		let center = CGPoint(x: screen.size.width/2, y: (screen.size.height-heightKeyboard)/2)
 
@@ -1177,6 +1177,19 @@ public class ProgressHUD: UIView {
 			view.layer.addSublayer(layer)
 		}
 	}
+    
+    private var getWindow: UIWindow {
+        if #available(iOS 13.0, *) {
+            if let window = UIApplication.shared.delegate?.window {
+                return window ?? UIWindow()
+            }
+            let scene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene
+            let window = scene?.windows.first(where: { $0.isKeyWindow })
+            return window ?? UIApplication.shared.windows.first ?? UIWindow()
+        } else {
+            return UIApplication.shared.keyWindow ?? UIWindow()
+        }
+    }
 }
 
 // MARK: - ProgressView
